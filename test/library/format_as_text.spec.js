@@ -6,7 +6,7 @@ import NumberFormat from '../../src/number_format';
 /*** format_number input as text ****/
 describe('NumberFormat as text', () => {
   it('should format numbers to currency', () => {
-    const wrapper = shallow(<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />);
+    const wrapper = shallow(<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} textPrefix={'$'} />);
     expect(wrapper.find('span').text()).toEqual('$2,456,981');
   });
 

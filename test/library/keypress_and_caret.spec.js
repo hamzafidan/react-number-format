@@ -17,20 +17,20 @@ describe('Test keypress and caret position changes', () => {
     persist.calls.reset();
   })
 
-  it('should maintain caret position if suffix/prefix is updated while typing #249', () => {
+  it('should maintain caret position if textSuffix/textPrefix is updated while typing #249', () => {
     class TestComp extends React.Component {
       constructor() {
         super();
         this.state = {
-          prefix: '$',
+          textPrefix: '$',
           value: '123',
         }
       }
       render() {
-        const {value, prefix} = this.state;
+        const {value, textPrefix} = this.state;
         return (
-          <NumberFormat isNumericString={true} prefix={prefix} value={value} onValueChange={({value}) => {
-            this.setState({value, prefix: value.length > 3 ? '$$' : '$'});
+          <NumberFormat isNumericString={true} textPrefix={textPrefix} value={value} onValueChange={({value}) => {
+            this.setState({value, textPrefix: value.length > 3 ? '$$' : '$'});
           }}/>
         )
       }
@@ -49,7 +49,7 @@ describe('Test keypress and caret position changes', () => {
 
   describe('Test character insertion', () => {
     it('should add any number properly when input is empty without format prop passed', () => {
-      const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'}/>);
+      const wrapper = shallow(<NumberFormat thousandSeparator={true} textPrefix={'$'}/>);
 
       simulateKeyInput(wrapper.find('input'), '1', 0);
 
@@ -112,7 +112,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('should handle addition of characters at a cursor position', () => {
-      const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value="$12,345"/>);
+      const wrapper = shallow(<NumberFormat thousandSeparator={true} textPrefix={'$'} value="$12,345"/>);
 
       simulateKeyInput(wrapper.find('input'), '8', 2, 2, setSelectionRange);
       expect(wrapper.state().value).toEqual('$182,345');
@@ -171,15 +171,15 @@ describe('Test keypress and caret position changes', () => {
   })
 
   describe('Test delete/backspace with numeric format', () => {
-    const wrapper = shallow(<NumberFormat thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
+    const wrapper = shallow(<NumberFormat thousandSeparator="," textPrefix="Rs. " textSuffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
 
-    it('should not remove prefix', () => {
+    it('should not remove textPrefix', () => {
       simulateKeyInput(wrapper.find('input'), 'Backspace', 4, 4, setSelectionRange);
       expect(wrapper.state().value).toEqual('Rs. 12,345.50 /sq.feet');
       expect(caretPos).toEqual(4);
     });
 
-    it('should not remove suffix', () => {
+    it('should not remove textSuffix', () => {
       simulateKeyInput(wrapper.find('input'), 'Delete', 13, 13, setSelectionRange);
       expect(wrapper.state().value).toEqual('Rs. 12,345.50 /sq.feet');
       expect(caretPos).toEqual(13);
@@ -203,10 +203,10 @@ describe('Test keypress and caret position changes', () => {
       expect(caretPos).toEqual(6);
     });
 
-    it('should maintain correct caret positon while removing the last character and suffix is not defined. Issue #105', () => {
+    it('should maintain correct caret positon while removing the last character and textSuffix is not defined. Issue #105', () => {
       wrapper.setProps({
-        suffix: '',
-        prefix: '$',
+        textSuffix: '',
+        textPrefix: '$',
         value: '$2,342,343'
       });
       wrapper.update();
@@ -215,10 +215,10 @@ describe('Test keypress and caret position changes', () => {
       expect(caretPos).toEqual(8);
     });
 
-    it('should maintain correct caret position while removing the second last character and suffix is not defined, Issue #116', () => {
+    it('should maintain correct caret position while removing the second last character and textSuffix is not defined, Issue #116', () => {
       wrapper.setProps({
-        suffix: '',
-        prefix: '',
+        textSuffix: '',
+        textPrefix: '',
         value: '1,000'
       });
 
@@ -229,11 +229,11 @@ describe('Test keypress and caret position changes', () => {
       expect(caretPos).toEqual(2);
     });
 
-    it('should allow removing negation(-), even if its before suffix', () => {
+    it('should allow removing negation(-), even if its before textSuffix', () => {
       const spy = jasmine.createSpy();
       wrapper.setProps({
-        suffix: '',
-        prefix: '$',
+        textSuffix: '',
+        textPrefix: '$',
         value: '-$1,000',
         onValueChange: spy
       });
@@ -248,8 +248,8 @@ describe('Test keypress and caret position changes', () => {
 
   describe('Test arrow keys', () => {
 
-    it('should keep caret position between the prefix and suffix', () => {
-      const wrapper = shallow(<NumberFormat thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
+    it('should keep caret position between the textPrefix and textSuffix', () => {
+      const wrapper = shallow(<NumberFormat thousandSeparator="," textPrefix="Rs. " textSuffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
       simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 4, 4, setSelectionRange);
       expect(caretPos).toEqual(4);
 
@@ -326,8 +326,8 @@ describe('Test keypress and caret position changes', () => {
       expect(caretPos).toEqual(1);
     })
 
-    it('should always keep caret position between suffix and prefix', () => {
-      const wrapper = shallow(<NumberFormat  thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
+    it('should always keep caret position between textSuffix and textPrefix', () => {
+      const wrapper = shallow(<NumberFormat  thousandSeparator="," textPrefix="Rs. " textSuffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
 
       simulateMousUpEvent(wrapper.find('input'), 0, setSelectionRange);
       expect(caretPos).toEqual(4);
@@ -338,7 +338,7 @@ describe('Test keypress and caret position changes', () => {
 
     it('should correct wrong caret position on focus', () => {
       jasmine.clock().install()
-      const wrapper = shallow(<NumberFormat  thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
+      const wrapper = shallow(<NumberFormat  thousandSeparator="," textPrefix="Rs. " textSuffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
 
       simulateFocusEvent(wrapper.find('input'), 0, 0, setSelectionRange);
       jasmine.clock().tick(1)
@@ -371,7 +371,7 @@ describe('Test keypress and caret position changes', () => {
 
     it('should not reset correct caret position on focus', () => {
       jasmine.clock().install()
-      const wrapper = shallow(<NumberFormat  thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
+      const wrapper = shallow(<NumberFormat  thousandSeparator="," textPrefix="Rs. " textSuffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
 
       // Note: init caretPos to `6`. Focus to `6`. In case of bug, selectionStart is `0` and the caret will move to `4`.
       //   otherwise (correct behaviour) the value will not change, and stay `6`
@@ -385,7 +385,7 @@ describe('Test keypress and caret position changes', () => {
     it('should not reset caret position on focus when full value is selected', () => {
       jasmine.clock().install();
       const value = "Rs. 12,345.50 /sq.feet";
-      const wrapper = shallow(<NumberFormat  thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value={value}/>);
+      const wrapper = shallow(<NumberFormat  thousandSeparator="," textPrefix="Rs. " textSuffix=" /sq.feet" value={value}/>);
 
       simulateFocusEvent(wrapper.find('input'), 0, value.length, setSelectionRange);
       jasmine.clock().tick(1);

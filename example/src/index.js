@@ -22,7 +22,7 @@ class App extends React.Component {
           <h3>
             Prefix and thousand separator : Format currency as text
           </h3>
-          <NumberFormat value={2456981} displayType="text" thousandSeparator={true} prefix="$" />
+          <NumberFormat value={2456981} displayType="text" thousandSeparator={true} textPrefix="$" />
         </div>
 
         <div className="example">
@@ -47,7 +47,7 @@ class App extends React.Component {
             thousandSeparator={this.state.thousandSeparator}
             decimalSeparator=","
             value={this.state.test}
-            prefix="$"
+            textPrefix="$"
             onValueChange={(values) => this.setState({test: values.value})}
             onChange={(e) => console.log(e.target.value)}
             onBlur={(e) => console.log(e.target.value)}
@@ -68,7 +68,7 @@ class App extends React.Component {
           </h3>
           <NumberFormat
             thousandSeparator={true}
-            prefix="₹"
+            textPrefix="₹"
             thousandsGroupStyle="lakh"
           />
         </div>
@@ -79,7 +79,7 @@ class App extends React.Component {
           </h3>
           <NumberFormat
             thousandSeparator={true}
-            prefix="¥"
+            textPrefix="¥"
             thousandsGroupStyle="wan"
           />
         </div>
@@ -88,7 +88,7 @@ class App extends React.Component {
           <h3>
             Decimal scale : Format currency in input with decimal scale
           </h3>
-          <NumberFormat thousandSeparator={true} decimalScale={3} fixedDecimalScale={true} prefix="$" />
+          <NumberFormat thousandSeparator={true} decimalScale={3} fixedDecimalScale={true} textPrefix="$" />
         </div>
 
 
@@ -100,14 +100,14 @@ class App extends React.Component {
             ThousandSeparator: '.', decimalSeparator=','
           </div>
           <div>
-            <NumberFormat thousandSeparator="." decimalSeparator="," prefix="$" />
+            <NumberFormat thousandSeparator="." decimalSeparator="," textPrefix="$" />
           </div>
           <br/>
           <div>
             ThousandSeparator: ' ', decimalSeparator='.'
           </div>
           <div>
-            <NumberFormat thousandSeparator=" " decimalSeparator="." prefix="$" />
+            <NumberFormat thousandSeparator=" " decimalSeparator="." textPrefix="$" />
           </div>
         </div>
 

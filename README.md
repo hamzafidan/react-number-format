@@ -47,8 +47,8 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
 | allowEmptyFormatting | boolean | false | Apply formatting to empty inputs |
 | allowLeadingZeros | boolean | false | Allow leading zeros at beginning of number |
-| prefix      | String (ex : $)     |   none | Add a prefix before the number |
-| suffix | String (ex : /-)      |    none | Add a suffix after the number |
+| textPrefix      | String (ex : $)     |   none | Add a prefix before the number |
+| textSuffix | String (ex : /-)      |    none | Add a suffix after the number |
 | value | Number or String | null | Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true. |
 | defaultValue | Number or String | null | Value to be used as default value if value is not provided. The format of defaultValue should be similar as defined for the value. |
 | isNumericString | boolean | false | If value is passed as string representation of numbers (unformatted) then this should be passed as true |
@@ -97,7 +97,7 @@ Its recommended to use formattedValue / value / floatValue based on the initial 
 ```jsx
 var NumberFormat = require('react-number-format');
 
-<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />
+<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} textPrefix={'$'} />
 ```
 Output : $2,456,981
 
@@ -105,7 +105,7 @@ Output : $2,456,981
 ```jsx
 var NumberFormat = require('react-number-format');
 
-<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} renderText={value => <div>{value}</div>} />
+<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} textPrefix={'$'} renderText={value => <div>{value}</div>} />
 ```
 Output : `<div> $2,456,981 </div>`
 
@@ -117,27 +117,27 @@ Output : 4111 1111 1111 1111
 
 #### Prefix and thousand separator : Format currency in input
 ```jsx
-<NumberFormat thousandSeparator={true} prefix={'$'} />
+<NumberFormat thousandSeparator={true} textPrefix={'$'} />
 ```
 ![Screencast example](https://i.imgur.com/d0P2Db1.gif)
 
 #### Indian(lakh) style and chinese(wan) style number grouping
 Indian (lakh) style grouping
 ```jsx
-<NumberFormat thousandSeparator={true} thousandsGroupStyle="lakh" prefix={'₹'} value={123456789}/>
+<NumberFormat thousandSeparator={true} thousandsGroupStyle="lakh" textPrefix={'₹'} value={123456789}/>
 ```
 Output: ₹12,34,56,789
 
 Chinese (wan) style grouping
 ```jsx
-<NumberFormat thousandSeparator={true} thousandsGroupStyle="wan" prefix={'¥'} value={123456789}/>
+<NumberFormat thousandSeparator={true} thousandsGroupStyle="wan" textPrefix={'¥'} value={123456789}/>
 ```
 Output: ¥1,2345,6789
 
 
 #### Maintaining change value on state
 ```jsx
-<NumberFormat value={this.state.profit} thousandSeparator={true} prefix={'$'} onValueChange={(values) => {
+<NumberFormat value={this.state.profit} thousandSeparator={true} textPrefix={'$'} onValueChange={(values) => {
     const {formattedValue, value} = values;
     // formattedValue = $2,223
     // value ie, 2223

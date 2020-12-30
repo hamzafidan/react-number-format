@@ -78,6 +78,19 @@ function _setPrototypeOf(o, p) {
   return _setPrototypeOf(o, p);
 }
 
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === "function") return true;
+
+  try {
+    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 function _assertThisInitialized(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -92,6 +105,25 @@ function _possibleConstructorReturn(self, call) {
   }
 
   return _assertThisInitialized(self);
+}
+
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf(Derived),
+        result;
+
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf(this).constructor;
+
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+
+    return _possibleConstructorReturn(this, result);
+  };
 }
 
 function createCommonjsModule(fn, module) {
@@ -358,8 +390,8 @@ var propTypes$1 = {
   decimalScale: propTypes.number,
   fixedDecimalScale: propTypes.bool,
   displayType: propTypes.oneOf(['input', 'text']),
-  prefix: propTypes.string,
-  suffix: propTypes.string,
+  textPrefix: propTypes.string,
+  textSuffix: propTypes.string,
   format: propTypes.oneOfType([propTypes.string, propTypes.func]),
   removeFormatting: propTypes.func,
   mask: propTypes.oneOfType([propTypes.string, propTypes.arrayOf(propTypes.string)]),
@@ -389,8 +421,8 @@ var defaultProps = {
   decimalSeparator: '.',
   thousandsGroupStyle: 'thousand',
   fixedDecimalScale: false,
-  prefix: '',
-  suffix: '',
+  textPrefix: '',
+  textSuffix: '',
   allowNegative: true,
   allowEmptyFormatting: false,
   allowLeadingZeros: false,
@@ -405,17 +437,17 @@ var defaultProps = {
   isAllowed: returnTrue
 };
 
-var NumberFormat =
-/*#__PURE__*/
-function (_React$Component) {
+var NumberFormat = /*#__PURE__*/function (_React$Component) {
   _inherits(NumberFormat, _React$Component);
+
+  var _super = _createSuper(NumberFormat);
 
   function NumberFormat(props) {
     var _this;
 
     _classCallCheck(this, NumberFormat);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(NumberFormat).call(this, props));
+    _this = _super.call(this, props);
     var defaultValue = props.defaultValue; //validate props
 
     _this.validateProps();
@@ -462,7 +494,7 @@ function (_React$Component) {
         //validate props
         this.validateProps();
         var lastValueWithNewFormat = this.formatNumString(lastNumStr);
-        var formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
+        var formattedValue = props.value === undefined || props.value === null ? lastValueWithNewFormat : this.formatValueProp();
         var numAsString = this.removeFormatting(formattedValue);
         var floatValue = parseFloat(numAsString);
         var lastFloatValue = parseFloat(lastNumStr);
@@ -605,23 +637,23 @@ function (_React$Component) {
         if (el.value === currentValue) setCaretPosition(el, caretPos);
       }, 0);
     }
-    /* This keeps the caret within typing area so people can't type in between prefix or suffix */
+    /* This keeps the caret within typing area so people can't type in between textPrefix or textSuffix */
 
   }, {
     key: "correctCaretPosition",
     value: function correctCaretPosition(value, caretPos, direction) {
       var _this$props3 = this.props,
-          prefix = _this$props3.prefix,
-          suffix = _this$props3.suffix,
+          textPrefix = _this$props3.textPrefix,
+          textSuffix = _this$props3.textSuffix,
           format = _this$props3.format; //if value is empty return 0
 
       if (value === '') return 0; //caret position should be between 0 and value length
 
-      caretPos = clamp(caretPos, 0, value.length); //in case of format as number limit between prefix and suffix
+      caretPos = clamp(caretPos, 0, value.length); //in case of format as number limit between textPrefix and textSuffix
 
       if (!format) {
         var hasNegation = value[0] === '-';
-        return clamp(caretPos, prefix.length + (hasNegation ? 1 : 0), value.length - suffix.length);
+        return clamp(caretPos, textPrefix.length + (hasNegation ? 1 : 0), value.length - textSuffix.length);
       } //in case if custom format method don't do anything
 
 
@@ -697,22 +729,22 @@ function (_React$Component) {
     /** methods to remove formattting **/
 
   }, {
-    key: "removePrefixAndSuffix",
-    value: function removePrefixAndSuffix(val) {
+    key: "removetextPrefixAndtextSuffix",
+    value: function removetextPrefixAndtextSuffix(val) {
       var _this$props4 = this.props,
           format = _this$props4.format,
-          prefix = _this$props4.prefix,
-          suffix = _this$props4.suffix; //remove prefix and suffix
+          textPrefix = _this$props4.textPrefix,
+          textSuffix = _this$props4.textSuffix; //remove textPrefix and textSuffix
 
       if (!format && val) {
         var isNegative = val[0] === '-'; //remove negation sign
 
-        if (isNegative) val = val.substring(1, val.length); //remove prefix
+        if (isNegative) val = val.substring(1, val.length); //remove textPrefix
 
-        val = prefix && val.indexOf(prefix) === 0 ? val.substring(prefix.length, val.length) : val; //remove suffix
+        val = textPrefix && val.indexOf(textPrefix) === 0 ? val.substring(textPrefix.length, val.length) : val; //remove textSuffix
 
-        var suffixLastIndex = val.lastIndexOf(suffix);
-        val = suffix && suffixLastIndex !== -1 && suffixLastIndex === val.length - suffix.length ? val.substring(0, suffixLastIndex) : val; //add negation sign back
+        var textSuffixLastIndex = val.lastIndexOf(textSuffix);
+        val = textSuffix && textSuffixLastIndex !== -1 && textSuffixLastIndex === val.length - textSuffix.length ? val.substring(0, textSuffixLastIndex) : val; //add negation sign back
 
         if (isNegative) val = '-' + val;
       }
@@ -758,7 +790,7 @@ function (_React$Component) {
       if (!val) return val;
 
       if (!format) {
-        val = this.removePrefixAndSuffix(val);
+        val = this.removetextPrefixAndtextSuffix(val);
         val = this.getFloatString(val);
       } else if (typeof format === 'string') {
         val = this.removePatternFormatting(val);
@@ -808,8 +840,8 @@ function (_React$Component) {
       var _this$props6 = this.props,
           decimalScale = _this$props6.decimalScale,
           fixedDecimalScale = _this$props6.fixedDecimalScale,
-          prefix = _this$props6.prefix,
-          suffix = _this$props6.suffix,
+          textPrefix = _this$props6.textPrefix,
+          textSuffix = _this$props6.textSuffix,
           allowNegative = _this$props6.allowNegative,
           thousandsGroupStyle = _this$props6.thousandsGroupStyle;
 
@@ -830,11 +862,11 @@ function (_React$Component) {
 
       if (thousandSeparator) {
         beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
-      } //add prefix and suffix
+      } //add textPrefix and textSuffix
 
 
-      if (prefix) beforeDecimal = prefix + beforeDecimal;
-      if (suffix) afterDecimal = afterDecimal + suffix; //restore negation sign
+      if (textPrefix) beforeDecimal = textPrefix + beforeDecimal;
+      if (textSuffix) afterDecimal = afterDecimal + textSuffix; //restore negation sign
 
       if (addNegation) beforeDecimal = '-' + beforeDecimal;
       numStr = beforeDecimal + (hasDecimalSeparator && decimalSeparator || '') + afterDecimal;
@@ -930,7 +962,7 @@ function (_React$Component) {
       var format = this.props.format; //format negation only if we are formatting as number
 
       if (!format) {
-        value = this.removePrefixAndSuffix(value);
+        value = this.removetextPrefixAndtextSuffix(value);
         value = this.formatNegation(value);
       } //remove formatting from number
 
@@ -945,8 +977,8 @@ function (_React$Component) {
     value: function isCharacterAFormat(caretPos, value) {
       var _this$props10 = this.props,
           format = _this$props10.format,
-          prefix = _this$props10.prefix,
-          suffix = _this$props10.suffix,
+          textPrefix = _this$props10.textPrefix,
+          textSuffix = _this$props10.textSuffix,
           decimalScale = _this$props10.decimalScale,
           fixedDecimalScale = _this$props10.fixedDecimalScale;
 
@@ -956,7 +988,7 @@ function (_React$Component) {
 
       if (typeof format === 'string' && format[caretPos] !== '#') return true; //check in number format
 
-      if (!format && (caretPos < prefix.length || caretPos >= value.length - suffix.length || decimalScale && fixedDecimalScale && value[caretPos] === decimalSeparator)) {
+      if (!format && (caretPos < textPrefix.length || caretPos >= value.length - textSuffix.length || decimalScale && fixedDecimalScale && value[caretPos] === decimalSeparator)) {
         return true;
       }
 
@@ -982,8 +1014,8 @@ function (_React$Component) {
       var _this$props11 = this.props,
           format = _this$props11.format,
           allowNegative = _this$props11.allowNegative,
-          prefix = _this$props11.prefix,
-          suffix = _this$props11.suffix,
+          textPrefix = _this$props11.textPrefix,
+          textSuffix = _this$props11.textSuffix,
           decimalScale = _this$props11.decimalScale;
 
       var _this$getSeparators6 = this.getSeparators(),
@@ -1011,8 +1043,8 @@ function (_React$Component) {
       */
 
 
-      var leftBound = !!format ? 0 : prefix.length;
-      var rightBound = lastValue.length - (!!format ? 0 : suffix.length);
+      var leftBound = !!format ? 0 : textPrefix.length;
+      var rightBound = lastValue.length - (!!format ? 0 : textSuffix.length);
 
       if (value.length > lastValue.length || !value.length || start === end || selectionStart === 0 && selectionEnd === lastValue.length || selectionStart === leftBound && selectionEnd === rightBound) {
         return value;
@@ -1182,8 +1214,8 @@ function (_React$Component) {
       var _this$props12 = this.props,
           decimalScale = _this$props12.decimalScale,
           fixedDecimalScale = _this$props12.fixedDecimalScale,
-          prefix = _this$props12.prefix,
-          suffix = _this$props12.suffix,
+          textPrefix = _this$props12.textPrefix,
+          textSuffix = _this$props12.textSuffix,
           format = _this$props12.format,
           onKeyDown = _this$props12.onKeyDown;
       var ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
@@ -1211,8 +1243,8 @@ function (_React$Component) {
       }
 
       var newCaretPosition = expectedCaretPosition;
-      var leftBound = isPatternFormat ? format.indexOf('#') : prefix.length;
-      var rightBound = isPatternFormat ? format.lastIndexOf('#') + 1 : value.length - suffix.length;
+      var leftBound = isPatternFormat ? format.indexOf('#') : textPrefix.length;
+      var rightBound = isPatternFormat ? format.lastIndexOf('#') + 1 : value.length - textSuffix.length;
 
       if (key === 'ArrowLeft' || key === 'ArrowRight') {
         var direction = key === 'ArrowLeft' ? 'left' : 'right';
@@ -1223,7 +1255,7 @@ function (_React$Component) {
         }
       } else if (key === 'Backspace' && !numRegex.test(value[expectedCaretPosition])) {
         /* NOTE: This is special case when backspace is pressed on a
-        negative value while the cursor position is after prefix. We can't handle it on onChange because
+        negative value while the cursor position is after textPrefix. We can't handle it on onChange because
         we will not have any information of keyPress
         */
         if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
@@ -1335,17 +1367,17 @@ function (_React$Component) {
       });
 
       if (displayType === 'text') {
-        return renderText ? renderText(value) || null : React.createElement("span", _extends({}, otherProps, {
+        return renderText ? renderText(value) || null : /*#__PURE__*/React.createElement("span", _extends({}, otherProps, {
           ref: getInputRef
         }), value);
       } else if (customInput) {
         var CustomInput = customInput;
-        return React.createElement(CustomInput, _extends({}, inputProps, {
+        return /*#__PURE__*/React.createElement(CustomInput, _extends({}, inputProps, {
           ref: getInputRef
         }));
       }
 
-      return React.createElement("input", _extends({}, inputProps, {
+      return /*#__PURE__*/React.createElement("input", _extends({}, inputProps, {
         ref: getInputRef
       }));
     }

@@ -33,8 +33,8 @@ declare module "react-number-format" {
     decimalScale?: number;
     fixedDecimalScale?: boolean;
     displayType?: 'input' | 'text';
-    prefix?: string;
-    suffix?: string;
+    textPrefix?: string;
+    textSuffix?: string;
     format?: string | FormatInputValueFunction;
     removeFormatting?: (formattedValue: string) => string;
     mask?: string | string[];
